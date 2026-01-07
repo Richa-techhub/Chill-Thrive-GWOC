@@ -1,26 +1,35 @@
-import BookingForm from "@/components/Bookingform";
-export const metadata = {
-  title: "Home - Simple",
-  description: "Page description",
-};
+import { fetchBookings } from "@/utils/bookings";
+import Bookingform from "@/components/Bookingform";
 
-import Hero from "@/components/hero-home";
-import BusinessCategories from "@/components/business-categories";
-import FeaturesPlanet from "@/components/features-planet";
-import LargeTestimonial from "@/components/large-testimonial";
-import Cta from "@/components/cta";
+export default async function Page() {
+  const bookings = await fetchBookings();
 
-export default function Home() {
   return (
-    <>
-      {/* Hero section */}
+    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
+      {/* Booking Form Section */}
+      <h1 style={{ marginBottom: "20px", textAlign: "center", fontSize: "2rem" }}>
+        Book Your Session
+      </h1>
+      <Bookingform />
 
-      <section className="py-20">
-        <BookingForm />
-      </section>
+      {/* Existing Bookings Section */}
+      <h1 style={{ marginTop: "40px", marginBottom: "20px", textAlign: "center", fontSize: "1.5rem" }}>
+        Current Bookings
+      </h1>
 
-      {/* Footer */}
-    </>
+      {bookings.length === 0 && <p style={{ textAlign: "center" }}>No bookings found</p>}
+
+      {bookings.map((booking: any, index: number) => (
+        <div key={index} style={{ marginBottom: "16px", padding: "10px", border: "1px solid #ddd", borderRadius: "8px" }}>
+          <p><b>Name:</b> {booking.customer_name}</p>
+          <p><b>Email:</b> {booking.email}</p>
+          <p><b>Date:</b> {booking.booking_date}</p>
+          <p><b>Time Slot:</b> {booking.time_slot}</p>
+          <p><b>Phone:</b> {booking.phone_no}</p>
+        </div>
+      ))}
+    </div>
   );
 }
+
 

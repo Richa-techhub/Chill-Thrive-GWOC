@@ -5,9 +5,11 @@ import { supabase } from "../utils/supabaseClient";
 
 export default function BookingForm() {
   const [formData, setFormData] = useState({
-    name: "",
+    customer_name: "",
     email: "",
-    date: "",
+    booking_date: "",
+    time_slot: "",
+    phone_no: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,18 +22,30 @@ export default function BookingForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { error } = await supabase.from("bookings").insert({
-      customer_name: formData.name,
-      email: formData.email,
-      booking_date: formData.date,
-    });
+    try {
+      const { error } = await supabase.from("bookings").insert([
+        {
+          customer_name: formData.customer_name,
+          email: formData.email,
+          booking_date: formData.booking_date,
+          time_slot: formData.time_slot,
+          phone_no: formData.phone_no,
+        },
+      ]);
 
-    if (error) {
-      console.error("Supabase error:", error);
-      alert("Booking failed. Check console.");
-    } else {
+      if (error) throw error;
+
       alert("Booking successful!");
-      setFormData({ name: "", email: "", date: "" });
+      setFormData({
+        customer_name: "",
+        email: "",
+        booking_date: "",
+        time_slot: "",
+        phone_no: "",
+      });
+    } catch (err: any) {
+      console.error("Booking failed:", err.message);
+      alert("Booking failed. Check console.");
     }
   };
 
@@ -44,9 +58,9 @@ export default function BookingForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
-          name="name"
+          name="customer_name"
           placeholder="Your Name"
-          value={formData.name}
+          value={formData.customer_name}
           onChange={handleChange}
           required
           className="w-full p-3 border rounded-md"
@@ -64,10 +78,28 @@ export default function BookingForm() {
 
         <input
           type="date"
-          name="date"
-          value={formData.date}
+          name="booking_date"
+          value={formData.booking_date}
           onChange={handleChange}
           required
+          className="w-full p-3 border rounded-md"
+        />
+
+        <input
+          type="text"
+          name="time_slot"
+          placeholder="Time Slot (e.g., 2:00 PM)"
+          value={formData.time_slot}
+          onChange={handleChange}
+          className="w-full p-3 border rounded-md"
+        />
+
+        <input
+          type="text"
+          name="phone_no"
+          placeholder="Phone Number"
+          value={formData.phone_no}
+          onChange={handleChange}
           className="w-full p-3 border rounded-md"
         />
 
