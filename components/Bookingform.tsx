@@ -1,11 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import React, { useState } from "react";
+import { supabase } from "../utils/supabaseClient";
 
 export default function BookingForm() {
   const [formData, setFormData] = useState({
@@ -22,31 +18,25 @@ export default function BookingForm() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const { data, error } = await supabase.from("bookings").insert([formData]);
+    const { error } = await supabase.from("bookings").insert({
+      customer_name: formData.name,
+      email: formData.email,
+      booking_date: formData.date,
+    });
 
     if (error) {
-      console.error("Supabase insert error:", error);
-      alert("Booking failed. Check console for details.");
-      return;
+      console.error("Supabase error:", error);
+      alert("Booking failed. Check console.");
+    } else {
+      alert("Booking successful!");
+      setFormData({ name: "", email: "", date: "" });
     }
-
-    console.log("Inserted data:", data);
-    alert("Booking submitted successfully!");
-    setFormData({ name: "", email: "", date: "" });
-  } catch (err) {
-    console.error("Unexpected error:", err);
-    alert("Something went wrong.");
-  }
-};
-
-
-  
+  };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-md">
+    <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow">
       <h2 className="text-2xl font-semibold mb-4 text-center">
         Book an Appointment
       </h2>
@@ -61,6 +51,7 @@ export default function BookingForm() {
           required
           className="w-full p-3 border rounded-md"
         />
+
         <input
           type="email"
           name="email"
@@ -70,6 +61,7 @@ export default function BookingForm() {
           required
           className="w-full p-3 border rounded-md"
         />
+
         <input
           type="date"
           name="date"
@@ -78,11 +70,12 @@ export default function BookingForm() {
           required
           className="w-full p-3 border rounded-md"
         />
+
         <button
           type="submit"
-          className="w-full bg-black text-white py-3 rounded-md"
+          className="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600"
         >
-          Submit Booking
+          Book Now
         </button>
       </form>
     </div>
