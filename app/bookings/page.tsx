@@ -1,4 +1,5 @@
 // pages/bookings.tsx
+"use client";
 import { useEffect, useState } from 'react';
 import { fetchBookings } from '../../utils/bookings';
 
